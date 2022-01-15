@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -20,6 +22,20 @@ namespace PersonsDb
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Person> Persons { get; set; } = null!;
         public virtual DbSet<RegexData> RegexDatas { get; set; } = null!;
+
+        public override int SaveChanges()
+        {
+            IEnumerable<object> entities = ChangeTracker.Entries().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified).Select(entry => entry.Entity);
+            
+            foreach (object entity in entities)
+            {
+                Console.WriteLine($" Validating {entity}");
+                var validationContext = new ValidationContext(entity);
+                Validator.ValidateObject(entity,  validationContext, true);
+            }
+            
+            return base.SaveChanges();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

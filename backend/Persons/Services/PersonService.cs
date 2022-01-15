@@ -1,14 +1,18 @@
-﻿using Persons.DTOs;
+﻿using System.Text.RegularExpressions;
+
+using Persons.DTOs;
 
 namespace Persons.Services;
 
 public class PersonService
 {
     private PersonsContext personsContext;
-
+    private Regex addressRegex;
+    
     public PersonService(PersonsContext personsContext)
     {
         this.personsContext = personsContext;
+        addressRegex = new Regex(@"(\w)-(\d{4})\s(\w+),\s(\w+)\s(\d)");
     }
 
     public IEnumerable<PersonResponseDto> GetAllPersons()
@@ -23,7 +27,44 @@ public class PersonService
             ? null
             : GetPersonResponseDto(person);
     }
-    
+
+    public long AddPerson(PersonDto dto)
+    {
+        Match match = addressRegex.Match(dto.Address);
+
+        if (!match.Success)
+        {
+            return -1;
+        }
+        var city = new City
+        {
+            CountryCode = match.Groups[1].Value,
+            PostalCode = int.Parse(match.Groups[2].Value),
+            Name = match.Groups[3].Value
+        };
+
+        var address = new Adress
+        {
+            City = city,
+            StreetName = match.Groups[4].Value,
+            StreetNr = int.Parse(match.Groups[5].Value)
+        };
+
+        var person = new Person
+        {
+            Firstname = dto.Firstname,
+            Lastname = dto.Lastname,
+            Tel = dto.Tel,
+            Born = dto.Born,
+            Adress = address
+        };
+
+        personsContext.Persons.Add(person);
+       personsContext.SaveChanges();
+
+       return person.Id;
+    }
+
     private static PersonResponseDto GetPersonResponseDto(Person person)
     {
         return new PersonResponseDto
@@ -36,4 +77,5 @@ public class PersonService
             Tel = person.Tel
         };
     }
+    
 }

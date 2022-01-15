@@ -15,17 +15,22 @@ public class PersonController : ControllerBase
     {
         this.service = service;
     }
-    
 
     [HttpGet()]
-    public IActionResult All()
+    public IActionResult GetAllPersons()
     {
         return Ok(service.GetAllPersons());
     }
 
     [HttpGet("{id}")]
-    public IActionResult One(long id)
+    public IActionResult GetPerson(long id)
     {
         return Ok(service.GetPerson(id));
+    }
+
+    [HttpPost]
+    public IActionResult AddPerson([FromBody] PersonDto dto)
+    {
+        return Ok(service.AddPerson(dto));
     }
 }

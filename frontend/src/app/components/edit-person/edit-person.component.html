@@ -1,0 +1,33 @@
+<form [formGroup]="form">
+  <div class="propInput" >
+    <label>Vorname:</label>
+    <input type="text" formControlName="firstname"/>
+    <span *ngIf="form.controls['firstname'].errors">Vorname muss mit Großbuchstaben beginnen und mindestens 3 Zeic hen lang sein</span>
+  </div>
+  <div class="propInput" >
+    <label>Nachname:</label>
+    <input type="text" formControlName="lastname" />
+    <span *ngIf="form.controls['lastname'].errors">Lehner. DeNiro. DelPonte </span>
+  </div>
+
+  <div class="propInput">
+    <label>Geb:</label>
+    <input type="text" formControlName="born"/>
+    <span *ngIf="form.controls['born'].errors">Format: 1966-05-01 00:00:00</span>
+  </div>
+
+  <div class="propInput">
+    <label>tel:</label>
+    <input type="text" formControlName="tel"/>
+    <span *ngIf="form.controls['tel'].errors">Format: +43 (01) 1234</span>
+  </div>
+
+  <div class="propInput">
+    <label>Address:</label>
+    <input type="text" formControlName="address"/>
+    <span *ngIf="form.controls['address'].errors">Format: A-4710 Grieskirchen, Schulstrasse 1</span>
+  </div>
+
+  <button [disabled]="!form.valid" (click)="save()">Save</button>
+</form>
+
